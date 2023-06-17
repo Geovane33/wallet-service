@@ -1,0 +1,14 @@
+#spring:
+#  datasource:
+#    drive-class-name: com.mysql.cj.jdbc.Driver
+#    url: jdbc:mysql://db4free.net:3306/banktest?useTimezone=true&serverTimezone=UTC&useSSL=false
+#    username: banktest
+#    password: admin123
+
+spring:
+  rabbitmq:
+    host: cougar.rmq.cloudamqp.com
+    port: 5672
+    username: lvtyxxuy
+    virtual-host: lvtyxxuy
+    password: HFPrV1eq1gLSAjQ0E_0mo5WDGgeLx-uj
