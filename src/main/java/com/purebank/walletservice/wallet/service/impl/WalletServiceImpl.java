@@ -6,6 +6,7 @@ import com.purebank.walletservice.wallet.api.resource.WalletResource;
 import com.purebank.walletservice.wallet.domain.Wallet;
 import com.purebank.walletservice.wallet.domain.WalletActivity;
 import com.purebank.walletservice.wallet.exceptions.Exception;
+import com.purebank.walletservice.wallet.message.producer.WalletMessageProducer;
 import com.purebank.walletservice.wallet.repository.WalletRepository;
 import com.purebank.walletservice.wallet.service.WalletService;
 import lombok.extern.slf4j.Slf4j;
@@ -28,10 +29,12 @@ public class WalletServiceImpl implements WalletService {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
     @Autowired
     private WalletRepository walletRepository;
+
     @Autowired
-    private ObjectMapper objectMapper;
+    private WalletMessageProducer walletMessageProducer;
 
     public WalletResource createWallet(WalletResource walletResource) {
         try {
@@ -122,7 +125,7 @@ public class WalletServiceImpl implements WalletService {
         Optional<Wallet> walletOriginOptional = walletRepository.findWalletById(transferResource.getWalletOrigin());
         Optional<Wallet> walletDestinyOptional = walletRepository.findWalletById(transferResource.getWalletDestiny());
 
-        String errorMessage = null;
+        String errorMessage = StringUtils.EMPTY;
         transferResource.setStatus(TransferStatus.FAILED);
         if (walletOriginOptional.isEmpty()) {
             errorMessage = "Falha ao processar a transferência: Conta de origem não existe";
@@ -131,7 +134,7 @@ public class WalletServiceImpl implements WalletService {
         } else if (walletOriginOptional.get().getBalance().compareTo(transferResource.getAmount()) < 0) {
             errorMessage = "Falha ao processar a transferência: saldo insuficiente";
         }
-        if (errorMessage == null) {
+        if (StringUtils.isBlank(errorMessage)) {
             Wallet walletOrigin = walletOriginOptional.get();
             Wallet walletDestiny = walletDestinyOptional.get();
 
@@ -142,11 +145,8 @@ public class WalletServiceImpl implements WalletService {
             walletRepository.save(walletDestiny);
             transferResource.setStatus(TransferStatus.COMPLETED);
         }
-        updateStatusTransfer(transferResource, StringUtils.defaultString(errorMessage));
+        this.walletMessageProducer.updateStatusTransfer(transferResource, errorMessage);
     }
 
-    private void updateStatusTransfer(TransferResource transferResource, String statusDescription) {
-        transferResource.setStatusDescription(statusDescription);
-        rabbitTemplate.convertAndSend("direct-exchange-default", "queue-update-status-transfer-key", transferResource);
-    }
+
 }
