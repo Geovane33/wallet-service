@@ -1,13 +1,12 @@
 package com.purebank.walletservice.wallet.api;
 
 import com.purebank.walletservice.wallet.api.resource.WalletResource;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.Size;
+import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/wallet")
@@ -25,11 +24,11 @@ public interface WalletApi {
     ResponseEntity<BigDecimal> getBalance(@PathVariable Long walletId);
 
     @PutMapping
-    ResponseEntity<WalletResource> updateWallet(@RequestBody WalletResource walletResource);
+    ResponseEntity<WalletResource> updateWallet(@RequestBody @Validated WalletResource walletResource);
 
     @PatchMapping("/{walletId}/deposit")
-    ResponseEntity<WalletResource> deposit(@PathVariable String accountId, @RequestParam BigDecimal amount);
+    ResponseEntity<Void> deposit(@PathVariable Long walletId, @RequestParam @Positive BigDecimal amount);
 
     @PatchMapping("/{walletId}/withdraw")
-    ResponseEntity<WalletResource> withdraw(@PathVariable String accountId, @RequestParam BigDecimal amount);
+    ResponseEntity<Void> withdraw(@PathVariable Long walletId, @RequestParam @Positive BigDecimal amount);
 }

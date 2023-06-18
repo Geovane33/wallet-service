@@ -11,8 +11,8 @@ public class Exception extends RuntimeException {
     private HttpStatus status;
 
     public static class NotFound extends Exception {
-        public NotFound(Long id) {
-            super(String.format("User with id %d not found.", id), HttpStatus.NOT_FOUND);
+        public NotFound(String message) {
+            super(message, HttpStatus.NOT_FOUND);
         }
     }
 
@@ -22,6 +22,11 @@ public class Exception extends RuntimeException {
         }
     }
 
+    public static class FailedToDeposit extends Exception {
+        public FailedToDeposit(String message) {
+            super(message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
 
     public static class EmailAlreadyExists extends Exception {
         public EmailAlreadyExists() {
@@ -41,6 +46,14 @@ public class Exception extends RuntimeException {
         }
     }
 
+
+    public static class InvalidDepositAmount extends Exception {
+        public InvalidDepositAmount(String message) {
+            super(message, HttpStatus.BAD_REQUEST);
+        }
+    }
+
+
     public static class CPFAlreadyExists extends Exception {
         public CPFAlreadyExists() {
             super("CPF already exists");
@@ -55,7 +68,7 @@ public class Exception extends RuntimeException {
 
     public static class InvalidJwtAuthenticationException extends Exception {
         public InvalidJwtAuthenticationException() {
-            super("invalid jwt authentication", HttpStatus.FORBIDDEN);
+            super("invalid jwt authentication");
         }
     }
 
@@ -77,11 +90,14 @@ public class Exception extends RuntimeException {
         }
     }
 
-    public Exception(String message, HttpStatus... status) {
+    public Exception(String message, HttpStatus status) {
+        super(message);
+        this.status = status;
+    }
+
+    public Exception(String message) {
         super(message);
         this.status = HttpStatus.OK;
-        if (status.length > 0)
-            this.status = status[0];
     }
 
     public Exception(HttpStatus status) {

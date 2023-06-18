@@ -7,6 +7,9 @@ import java.math.BigDecimal;
 
 @Data
 public class TransferResource {
+
+    @Schema(description = "ID da carteira digital de origem")
+    private Long id;
     @Schema(description = "ID da carteira digital de origem")
     private Long walletOrigin;
 
@@ -16,8 +19,8 @@ public class TransferResource {
     @Schema(description = "Valor da transferência")
     private BigDecimal amount;
     private String statusDescription;
-//    @Schema(description = "Status da transferência")
-//    private TransferStatus status;
+    @Schema(description = "Status da transferência")
+    private TransferStatus status;
     @Schema(description = "Conta externa (true se for uma conta externa, false se for interna)")
     private Boolean externalAccount;
 
