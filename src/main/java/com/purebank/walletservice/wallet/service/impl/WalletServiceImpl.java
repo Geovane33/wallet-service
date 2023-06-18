@@ -114,25 +114,11 @@ public class WalletServiceImpl implements WalletService {
         walletActivity.setActivityDate(LocalDateTime.now());
         walletActivity.setCreationDate(LocalDateTime.now());
         walletActivity.setLastUpdate(LocalDateTime.now());
-        String walletActivityAsString;
-        try {
-            walletActivityAsString = objectMapper.writeValueAsString(walletActivity);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-        rabbitTemplate.convertAndSend("direct-exchange-default", "queue-fila1-key", walletActivityAsString);
+        rabbitTemplate.convertAndSend("direct-exchange-default", "queue-wallet-activity-key", walletActivity);
     }
 
     @RabbitListener(queues = "update-accounts-balance")
-    public void updateAccountsBalance(String payload) {
-        TransferResource transferResource;
-        try {
-            transferResource = objectMapper.readValue(payload, TransferResource.class);
-        } catch (JsonProcessingException ex) {
-            log.error("Erro ao realizar parse do payload TransferResource: {}", ex.getMessage());
-            throw new RuntimeException("Erro ao obter payload dos dados de transferencia");
-        }
-
+    public void updateAccountsBalance(TransferResource transferResource) {
         Optional<Wallet> walletOriginOptional = walletRepository.findWalletById(transferResource.getWalletOrigin());
         Optional<Wallet> walletDestinyOptional = walletRepository.findWalletById(transferResource.getWalletDestiny());
 
@@ -161,19 +147,6 @@ public class WalletServiceImpl implements WalletService {
 
     private void updateStatusTransfer(TransferResource transferResource, String statusDescription) {
         transferResource.setStatusDescription(statusDescription);
-        String transferResourceAsString;
-
-        try {
-            transferResourceAsString = objectMapper.writeValueAsString(transferResource);
-        } catch (JsonProcessingException e) {
-            throw new RuntimeException(e);
-        }
-
-        rabbitTemplate.convertAndSend("direct-exchange-default", "queue-update-status-transfer-key", transferResourceAsString);
+        rabbitTemplate.convertAndSend("direct-exchange-default", "queue-update-status-transfer-key", transferResource);
     }
-
-//    private void updateStatusTransfer(TransferResource transferResource, String statusDescription) {
-//        transferResource.setStatusDescription(statusDescription);
-//        rabbitTemplate.convertAndSend("direct-exchange-default", "queue-update-status-transfer-key", transferResource);
-//    }
 }
