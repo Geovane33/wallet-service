@@ -1,5 +1,6 @@
 package com.purebank.walletservice.wallet.domain;
 
+import com.purebank.walletservice.wallet.enums.ProcessStatus;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -21,7 +22,7 @@ public class WalletActivity {
     private String activityType;
 
     @Column(name = "status")
-    private String status;
+    private ProcessStatus status;
 
     @Column(name = "amount")
     private BigDecimal amount;

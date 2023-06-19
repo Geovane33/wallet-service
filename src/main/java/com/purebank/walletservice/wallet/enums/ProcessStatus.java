@@ -1,4 +1,4 @@
-package com.purebank.walletservice.wallet.utils;
+package com.purebank.walletservice.wallet.enums;
 
 public enum ProcessStatus {
     PENDING("Pending"),
