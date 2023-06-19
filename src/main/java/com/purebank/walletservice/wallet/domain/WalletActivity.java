@@ -16,6 +16,8 @@ public class WalletActivity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "wallet_id")
+    private Long walletId;
     @Column(name = "uuid_activity")
     private String uuidActivity;
     @Column(name = "activity_type")

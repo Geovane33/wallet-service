@@ -11,6 +11,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDateTime;
+import java.util.Collections;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -41,6 +44,24 @@ public class WalletActivityServiceImpl implements WalletActivityService {
             log.error("Erro ao salvar movimentação da conta: {}", ex.getMessage());
             throw ex;
         }
+    }
+
+    @Override
+    public List<WalletActivityResource> activities(Long walletId) {
+        List<WalletActivity> walletActivities = walletActivityRepository
+                .findByWalletIdOrderByCreationDateAsc(walletId)
+                .orElse(Collections.emptyList());
+
+        return walletActivities.stream()
+                .map(a -> {
+                    WalletActivityResource resource = new WalletActivityResource();
+                    resource.setUuidActivity(a.getUuidActivity());
+                    resource.setWalletId(a.getWalletId());
+                    resource.setActivityType(a.getActivityType());
+                    resource.setStatus(a.getStatus());
+                    resource.setAmount(a.getAmount());
+                    return resource;
+                }).toList();
     }
 
 }

@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 
@@ -110,12 +111,17 @@ public class WalletServiceImpl implements WalletService {
         return true;
     }
 
+    @Override
+    public List<WalletActivityResource> activities(Long walletId) {
+        return null;
+    }
+
     private Wallet findWalletById(Long walletId) {
         Optional<Wallet> walletOptional = walletRepository.findWalletById(walletId);
         return walletOptional.orElseThrow(() -> new Exception.NotFound("Carteira não encontrada com o ID: " + walletId));
     }
 
-    public void sendWalletActivities(Long walletId, BigDecimal amount, String activityType, ProcessStatus status, String description) {
+    private void sendWalletActivities(Long walletId, BigDecimal amount, String activityType, ProcessStatus status, String description) {
         WalletActivityResource walletActivityResource = new WalletActivityResource();
         walletActivityResource.setWalletId(walletId);
         walletActivityResource.setActivityDate(LocalDateTime.now());

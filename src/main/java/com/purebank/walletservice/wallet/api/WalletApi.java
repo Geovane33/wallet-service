@@ -1,5 +1,6 @@
 package com.purebank.walletservice.wallet.api;
 
+import com.purebank.walletservice.wallet.resource.WalletActivityResource;
 import com.purebank.walletservice.wallet.resource.WalletResource;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
@@ -7,6 +8,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/wallet")
@@ -31,4 +33,7 @@ public interface WalletApi {
 
     @PatchMapping("/{walletId}/withdraw")
     ResponseEntity<Void> withdraw(@PathVariable Long walletId, @RequestParam @Positive BigDecimal amount);
+
+    @PatchMapping("/{walletId}/activities")
+    ResponseEntity<List<WalletActivityResource>> activities(@PathVariable Long walletId);
 }

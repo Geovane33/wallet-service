@@ -1,14 +1,17 @@
 package com.purebank.walletservice.wallet;
 
 import com.purebank.walletservice.wallet.api.WalletApi;
+import com.purebank.walletservice.wallet.resource.WalletActivityResource;
 import com.purebank.walletservice.wallet.resource.WalletResource;
 import com.purebank.walletservice.wallet.exceptions.Exception;
+import com.purebank.walletservice.wallet.service.WalletActivityService;
 import com.purebank.walletservice.wallet.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import static com.purebank.walletservice.wallet.utils.constants.Constants.*;
 
@@ -18,6 +21,9 @@ public class WalletController implements WalletApi {
 
     @Autowired
     private WalletService walletService;
+
+    @Autowired
+    private WalletActivityService walletActivityService;
 
     @Override
     public ResponseEntity<WalletResource> createWallet(WalletResource walletResource) {
@@ -59,5 +65,10 @@ public class WalletController implements WalletApi {
         }
         walletService.withdraw(walletId, amount);
         return ResponseEntity.ok().build();
+    }
+
+    @Override
+    public ResponseEntity<List<WalletActivityResource>> activities(Long walletId) {
+        return ResponseEntity.ok(walletActivityService.activities(walletId));
     }
 }
