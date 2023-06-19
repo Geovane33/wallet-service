@@ -10,6 +10,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import java.math.BigDecimal;
 
+import static com.purebank.walletservice.wallet.utils.constants.Constants.*;
+
+
 @RestController
 public class WalletController implements WalletApi {
 
@@ -43,7 +46,7 @@ public class WalletController implements WalletApi {
     @Override
     public ResponseEntity<Void> deposit(Long walletId, BigDecimal amount) {
         if (BigDecimal.ZERO.compareTo(amount) >= 0 || new BigDecimal("1000000").compareTo(amount) <= 0) {
-            throw new Exception.InvalidAmount("O valor de depósito tem que ser maior que R$0,00 e menor que R$1.000.000,00");
+            throw new Exception.InvalidAmount(DEPOSIT_AMOUNT_MUST_BE_GREATER_THAN_XXXX_AND_LESS_THAN_XXXX);
         }
         walletService.deposit(walletId, amount);
         return ResponseEntity.ok().build();
@@ -52,7 +55,7 @@ public class WalletController implements WalletApi {
     @Override
     public ResponseEntity<Void> withdraw(Long walletId, BigDecimal amount) {
         if (BigDecimal.ZERO.compareTo(amount) <= 0 || new BigDecimal("1000000").compareTo(amount) <= 0) {
-            throw new Exception.InvalidAmount("O valor de saque tem que ser maior que R$0,00 e menor que R$1.000.000,00");
+            throw new Exception.InvalidAmount(WITHDRAWAL_AMOUNT_MUST_BE_GREATER_THAN_XXXX_AND_LESS_THAN_XXXX);
         }
         walletService.withdraw(walletId, amount);
         return ResponseEntity.ok().build();

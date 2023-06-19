@@ -1,5 +1,6 @@
 package com.purebank.walletservice.wallet.resource;
 
+import com.purebank.walletservice.wallet.utils.ProcessStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -12,18 +13,17 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WalletActivityResource implements Serializable {
-
+    private String uuidActivity;
     private Long walletId;
-
-    private Long movementIdentifier;
 
     private String activityType;
 
-    private String status;
+    private ProcessStatus status;
 
     private BigDecimal amount;
 
     private String description;
+
     private LocalDateTime activityDate;
 
     private LocalDateTime creationDate;

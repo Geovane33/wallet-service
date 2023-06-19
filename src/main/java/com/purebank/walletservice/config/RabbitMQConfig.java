@@ -17,13 +17,6 @@ import org.springframework.messaging.handler.annotation.support.MessageHandlerMe
 public class RabbitMQConfig {
 
     @Bean
-    public Queue queueUpdateStatusTransfer() {
-        return QueueBuilder
-                .durable("update-status-transfer")
-                .build();
-    }
-
-    @Bean
     public Queue queueWalletActivity() {
         return QueueBuilder
                 .durable("wallet-activity")
@@ -43,15 +36,6 @@ public class RabbitMQConfig {
                 .bind(queueWalletActivity())
                 .to(directExchange())
                 .with("queue-wallet-activity-key")
-                .noargs();
-    }
-
-    @Bean
-    public Binding bindingUpdateStatusTransfer() {
-        return BindingBuilder
-                .bind(queueUpdateStatusTransfer())
-                .to(directExchange())
-                .with("queue-update-status-transfer-key")
                 .noargs();
     }
 

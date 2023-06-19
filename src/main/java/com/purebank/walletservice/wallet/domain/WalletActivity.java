@@ -15,8 +15,8 @@ public class WalletActivity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "movement_identifier")
-    private Long movementIdentifier;
+    @Column(name = "uuid_activity")
+    private String uuidActivity;
     @Column(name = "activity_type")
     private String activityType;
 

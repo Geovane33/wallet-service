@@ -1,7 +1,6 @@
 package com.purebank.walletservice.wallet.message.consumer;
 
 import com.purebank.walletservice.wallet.resource.TransferResource;
-import com.purebank.walletservice.wallet.resource.WalletActivityResource;
 import com.purebank.walletservice.wallet.service.WalletActivityService;
 import com.purebank.walletservice.wallet.service.impl.WalletServiceImpl;
 import org.springframework.amqp.rabbit.annotation.RabbitListener;
