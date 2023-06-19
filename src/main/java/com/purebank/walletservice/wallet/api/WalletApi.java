@@ -1,6 +1,6 @@
 package com.purebank.walletservice.wallet.api;
 
-import com.purebank.walletservice.wallet.api.resource.WalletResource;
+import com.purebank.walletservice.wallet.resource.WalletResource;
 import jakarta.validation.constraints.Positive;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;

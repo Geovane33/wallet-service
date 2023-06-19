@@ -1,16 +1,16 @@
 package com.purebank.walletservice.wallet.service.impl;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import com.purebank.walletservice.wallet.api.resource.WalletResource;
 import com.purebank.walletservice.wallet.domain.Wallet;
-import com.purebank.walletservice.wallet.domain.WalletActivity;
 import com.purebank.walletservice.wallet.exceptions.Exception;
+import com.purebank.walletservice.wallet.message.producer.WalletMessageProducer;
 import com.purebank.walletservice.wallet.repository.WalletRepository;
+import com.purebank.walletservice.wallet.resource.TransferResource;
+import com.purebank.walletservice.wallet.resource.MovimentStatus;
+import com.purebank.walletservice.wallet.resource.WalletActivityResource;
+import com.purebank.walletservice.wallet.resource.WalletResource;
 import com.purebank.walletservice.wallet.service.WalletService;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.amqp.rabbit.annotation.RabbitListener;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -28,11 +28,14 @@ public class WalletServiceImpl implements WalletService {
 
     @Autowired
     private RabbitTemplate rabbitTemplate;
+
     @Autowired
     private WalletRepository walletRepository;
-    @Autowired
-    private ObjectMapper objectMapper;
 
+    @Autowired
+    private WalletMessageProducer walletMessageProducer;
+
+    @Override
     public WalletResource createWallet(WalletResource walletResource) {
         try {
             Wallet wallet = new Wallet();
@@ -42,8 +45,7 @@ public class WalletServiceImpl implements WalletService {
             walletResource.setId(wallet.getId()); // Atualiza o ID da carteira no objeto de recurso
             return walletResource;
         } catch (DataAccessException e) {
-            // Tratamento da exceção de persistência
-            // Pode ser lançada uma exceção personalizada, log do erro, retorno de uma mensagem de erro específica, etc.
+            log.error("Erro ao criar carteira: {}", e.getMessage());
             throw new Exception("Erro ao criar a carteira.", HttpStatus.BAD_REQUEST);
         }
     }
@@ -80,9 +82,10 @@ public class WalletServiceImpl implements WalletService {
         try {
             wallet.setBalance(wallet.getBalance().add(amount));
             walletRepository.save(wallet);
-            saveWalletActivities(amount, "Deposit");
+            sendWalletActivities(walletId, amount, "deposit", "COMPLETED", "Depósito realizado com sucesso");
         } catch (Exception e) {
-            log.error("Falha ao efetivar deposito: {}", e.getMessage());
+            log.error("Falha ao efetivar depósito: {}", e.getMessage());
+            sendWalletActivities(walletId, amount, "deposit", "FAILED", "Não foi possível processar o depósito");
             throw new Exception.FailedToDeposit("Falha ao efetivar deposito.");
         }
         return true;
@@ -91,15 +94,22 @@ public class WalletServiceImpl implements WalletService {
     @Override
     public Boolean withdraw(Long walletId, BigDecimal amount) {
         Wallet wallet = findWalletById(walletId);
+        if (amount.compareTo(wallet.getBalance()) > 0) {
+            sendWalletActivities(walletId, amount, "withdraw", "FAILED",
+                    String.format("Saldo insuficiente ao realizar o saque no valor de RS$ %f", amount));
+            throw new Exception.InvalidAmount("Falha ao efetivar saque: Saldo insuficiente");
+        }
+
         try {
             wallet.setBalance(wallet.getBalance().subtract(amount));
             walletRepository.save(wallet);
+            sendWalletActivities(walletId, amount, "withdraw", "COMPLETED", "Saque realizado com sucesso");
         } catch (Exception e) {
+            sendWalletActivities(walletId, amount, "withdraw", "FAILED", "Não foi possível processar o saque");
             log.error("Falha ao efetivar saque: {}", e.getMessage());
-            throw new Exception.FailedToDeposit("Falha ao efetivar deposito.");
+            throw new Exception.FailedToWithdraw("Falha ao efetivar saque.");
         }
         return true;
-        //todo - Validar saldo e valor - tratar exceções
     }
 
     private Wallet findWalletById(Long walletId) {
@@ -107,23 +117,24 @@ public class WalletServiceImpl implements WalletService {
         return walletOptional.orElseThrow(() -> new Exception.NotFound("Carteira não encontrada com o ID: " + walletId));
     }
 
-    private void saveWalletActivities(BigDecimal amount, String activityType) {
-        WalletActivity walletActivity = new WalletActivity();
-        walletActivity.setAmount(amount);
-        walletActivity.setActivityType(activityType);
-        walletActivity.setActivityDate(LocalDateTime.now());
-        walletActivity.setCreationDate(LocalDateTime.now());
-        walletActivity.setLastUpdate(LocalDateTime.now());
-        rabbitTemplate.convertAndSend("direct-exchange-default", "queue-wallet-activity-key", walletActivity);
+    public void sendWalletActivities(Long walletId, BigDecimal amount, String activityType, String status, String description) {
+        WalletActivityResource walletActivityResource = new WalletActivityResource();
+        walletActivityResource.setWalletId(walletId);
+        walletActivityResource.setActivityDate(LocalDateTime.now());
+        walletActivityResource.setActivityType(activityType);
+        walletActivityResource.setAmount(amount);
+        walletActivityResource.setStatus(status);
+        walletActivityResource.setDescription(description);
+        walletActivityResource.setCreationDate(LocalDateTime.now());
+        walletMessageProducer.sendWalletActivity(walletActivityResource);
     }
 
-    @RabbitListener(queues = "update-accounts-balance")
     public void updateAccountsBalance(TransferResource transferResource) {
         Optional<Wallet> walletOriginOptional = walletRepository.findWalletById(transferResource.getWalletOrigin());
         Optional<Wallet> walletDestinyOptional = walletRepository.findWalletById(transferResource.getWalletDestiny());
 
-        String errorMessage = null;
-        transferResource.setStatus(TransferStatus.FAILED);
+        String errorMessage = StringUtils.EMPTY;
+        transferResource.setStatus(MovimentStatus.FAILED);
         if (walletOriginOptional.isEmpty()) {
             errorMessage = "Falha ao processar a transferência: Conta de origem não existe";
         } else if (walletDestinyOptional.isEmpty()) {
@@ -131,7 +142,7 @@ public class WalletServiceImpl implements WalletService {
         } else if (walletOriginOptional.get().getBalance().compareTo(transferResource.getAmount()) < 0) {
             errorMessage = "Falha ao processar a transferência: saldo insuficiente";
         }
-        if (errorMessage == null) {
+        if (StringUtils.isBlank(errorMessage)) {
             Wallet walletOrigin = walletOriginOptional.get();
             Wallet walletDestiny = walletDestinyOptional.get();
 
@@ -140,13 +151,9 @@ public class WalletServiceImpl implements WalletService {
 
             walletDestiny.setBalance(walletDestiny.getBalance().add(transferResource.getAmount()));
             walletRepository.save(walletDestiny);
-            transferResource.setStatus(TransferStatus.COMPLETED);
+            transferResource.setStatus(MovimentStatus.COMPLETED);
         }
-        updateStatusTransfer(transferResource, StringUtils.defaultString(errorMessage));
+        this.walletMessageProducer.updateStatusTransfer(transferResource, errorMessage);
     }
 
-    private void updateStatusTransfer(TransferResource transferResource, String statusDescription) {
-        transferResource.setStatusDescription(statusDescription);
-        rabbitTemplate.convertAndSend("direct-exchange-default", "queue-update-status-transfer-key", transferResource);
-    }
 }

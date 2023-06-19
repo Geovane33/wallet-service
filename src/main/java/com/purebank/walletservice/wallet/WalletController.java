@@ -1,7 +1,7 @@
 package com.purebank.walletservice.wallet;
 
 import com.purebank.walletservice.wallet.api.WalletApi;
-import com.purebank.walletservice.wallet.api.resource.WalletResource;
+import com.purebank.walletservice.wallet.resource.WalletResource;
 import com.purebank.walletservice.wallet.exceptions.Exception;
 import com.purebank.walletservice.wallet.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +43,7 @@ public class WalletController implements WalletApi {
     @Override
     public ResponseEntity<Void> deposit(Long walletId, BigDecimal amount) {
         if (BigDecimal.ZERO.compareTo(amount) >= 0 || new BigDecimal("1000000").compareTo(amount) <= 0) {
-            throw new Exception.InvalidDepositAmount("O valor de depósito tem que ser maior que R$0,00 e menor que R$1.000.000,00");
+            throw new Exception.InvalidAmount("O valor de depósito tem que ser maior que R$0,00 e menor que R$1.000.000,00");
         }
         walletService.deposit(walletId, amount);
         return ResponseEntity.ok().build();
@@ -52,7 +52,7 @@ public class WalletController implements WalletApi {
     @Override
     public ResponseEntity<Void> withdraw(Long walletId, BigDecimal amount) {
         if (BigDecimal.ZERO.compareTo(amount) <= 0 || new BigDecimal("1000000").compareTo(amount) <= 0) {
-            throw new Exception.InvalidDepositAmount("O valor de saque tem que ser maior que R$0,00 e menor que R$1.000.000,00");
+            throw new Exception.InvalidAmount("O valor de saque tem que ser maior que R$0,00 e menor que R$1.000.000,00");
         }
         walletService.withdraw(walletId, amount);
         return ResponseEntity.ok().build();

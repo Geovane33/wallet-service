@@ -28,6 +28,12 @@ public class Exception extends RuntimeException {
         }
     }
 
+    public static class FailedToWithdraw extends Exception {
+        public FailedToWithdraw(String message) {
+            super(message, HttpStatus.INTERNAL_SERVER_ERROR);
+        }
+    }
+
     public static class EmailAlreadyExists extends Exception {
         public EmailAlreadyExists() {
             super("E-mail already exists");
@@ -47,8 +53,8 @@ public class Exception extends RuntimeException {
     }
 
 
-    public static class InvalidDepositAmount extends Exception {
-        public InvalidDepositAmount(String message) {
+    public static class InvalidAmount extends Exception {
+        public InvalidAmount(String message) {
             super(message, HttpStatus.BAD_REQUEST);
         }
     }

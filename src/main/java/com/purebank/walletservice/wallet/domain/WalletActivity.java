@@ -15,8 +15,13 @@ public class WalletActivity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(name = "movement_identifier")
+    private Long movementIdentifier;
     @Column(name = "activity_type")
     private String activityType;
+
+    @Column(name = "status")
+    private String status;
 
     @Column(name = "amount")
     private BigDecimal amount;
