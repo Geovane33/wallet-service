@@ -1,8 +1,10 @@
 package com.purebank.walletservice.wallet.service;
 
+import com.purebank.walletservice.wallet.resource.WalletActivityResource;
 import com.purebank.walletservice.wallet.resource.WalletResource;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 public interface WalletService {
 
@@ -17,4 +19,6 @@ public interface WalletService {
     Boolean deposit(Long accountId, BigDecimal amount);
 
     Boolean withdraw(Long accountId, BigDecimal amount);
+
+    List<WalletActivityResource> activities(Long walletId);
 }
