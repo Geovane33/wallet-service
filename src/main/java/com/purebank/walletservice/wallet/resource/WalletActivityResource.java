@@ -1,5 +1,6 @@
 package com.purebank.walletservice.wallet.resource;
 
+import com.purebank.walletservice.wallet.enums.ActivityType;
 import com.purebank.walletservice.wallet.enums.ProcessStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -13,10 +14,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 public class WalletActivityResource implements Serializable {
-    private String uuidActivity;
     private Long walletId;
 
-    private String activityType;
+    private ActivityType activityType;
 
     private ProcessStatus status;
 
@@ -28,4 +28,5 @@ public class WalletActivityResource implements Serializable {
 
     private LocalDateTime creationDate;
 
+    private String uuidActivity;
 }

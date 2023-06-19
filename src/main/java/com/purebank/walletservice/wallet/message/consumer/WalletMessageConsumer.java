@@ -9,10 +9,6 @@ import org.springframework.stereotype.Component;
 
 @Component
 public class WalletMessageConsumer {
-
-    @Autowired
-    private WalletServiceImpl walletServiceImpl;
-
     @Autowired
     WalletActivityService walletActivityService;
 

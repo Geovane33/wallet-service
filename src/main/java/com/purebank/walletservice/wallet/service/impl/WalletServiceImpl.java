@@ -1,33 +1,27 @@
 package com.purebank.walletservice.wallet.service.impl;
 
 import com.purebank.walletservice.wallet.domain.Wallet;
+import com.purebank.walletservice.wallet.enums.ActivityType;
+import com.purebank.walletservice.wallet.enums.ProcessStatus;
 import com.purebank.walletservice.wallet.exceptions.Exception;
 import com.purebank.walletservice.wallet.message.producer.WalletMessageProducer;
 import com.purebank.walletservice.wallet.repository.WalletRepository;
 import com.purebank.walletservice.wallet.resource.WalletActivityResource;
 import com.purebank.walletservice.wallet.resource.WalletResource;
 import com.purebank.walletservice.wallet.service.WalletService;
-import com.purebank.walletservice.wallet.enums.ProcessStatus;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.dao.DataAccessException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 
 
 @Service
 @Slf4j
 public class WalletServiceImpl implements WalletService {
-
-    @Autowired
-    private RabbitTemplate rabbitTemplate;
-
     @Autowired
     private WalletRepository walletRepository;
 
@@ -41,11 +35,11 @@ public class WalletServiceImpl implements WalletService {
             wallet.setName(walletResource.getName());
             wallet.setCreationDate(LocalDateTime.now());
             walletRepository.save(wallet);
-            walletResource.setId(wallet.getId()); // Atualiza o ID da carteira no objeto de recurso
+            walletResource.setId(wallet.getId());
             return walletResource;
-        } catch (DataAccessException e) {
+        } catch (RuntimeException e) {
             log.error("Erro ao criar carteira: {}", e.getMessage());
-            throw new Exception("Erro ao criar a carteira.", HttpStatus.BAD_REQUEST);
+            throw new Exception("Erro ao criar a carteira.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -61,16 +55,22 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public BigDecimal getBalance(Long walletId) {
-        return walletRepository.getBalanceByWalletId(walletId);
+        Optional<BigDecimal> balance = walletRepository.getBalanceByWalletId(walletId);
+        return balance.orElseThrow(() -> new Exception.NotFound("Carteira não encontrada com o ID: " + walletId));
     }
 
     @Override
     public WalletResource updateWallet(WalletResource walletResource) {
-        Wallet wallet = new Wallet();
-        wallet.setId(walletResource.getId());
-        wallet.setBalance(walletResource.getBalance());
-        wallet.setName(walletResource.getName());
-        walletRepository.save(wallet);
+        try {
+            Wallet wallet = new Wallet();
+            wallet.setId(walletResource.getId());
+            wallet.setBalance(walletResource.getBalance());
+            wallet.setName(walletResource.getName());
+            walletRepository.save(wallet);
+        } catch (RuntimeException e) {
+            log.error("Erro ao atualizar carteira com ID: {} ex: {}", walletResource.getId(), e.getMessage());
+            throw new Exception("Erro ao atualizar a carteira.", HttpStatus.INTERNAL_SERVER_ERROR);
+        }
         return walletResource;
     }
 
@@ -81,10 +81,10 @@ public class WalletServiceImpl implements WalletService {
         try {
             wallet.setBalance(wallet.getBalance().add(amount));
             walletRepository.save(wallet);
-            sendWalletActivities(walletId, amount, "deposit", ProcessStatus.COMPLETED, "Depósito realizado com sucesso");
+            sendWalletActivities(walletId, amount, ActivityType.DEPOSIT, ProcessStatus.COMPLETED, "Depósito realizado com sucesso");
         } catch (Exception e) {
             log.error("Falha ao efetivar depósito: {}", e.getMessage());
-            sendWalletActivities(walletId, amount, "deposit", ProcessStatus.FAILED, "Não foi possível processar o depósito");
+            sendWalletActivities(walletId, amount, ActivityType.DEPOSIT, ProcessStatus.FAILED, "Não foi possível processar o depósito");
             throw new Exception.FailedToDeposit("Falha ao efetivar deposito.");
         }
         return true;
@@ -94,7 +94,7 @@ public class WalletServiceImpl implements WalletService {
     public Boolean withdraw(Long walletId, BigDecimal amount) {
         Wallet wallet = findWalletById(walletId);
         if (amount.compareTo(wallet.getBalance()) > 0) {
-            sendWalletActivities(walletId, amount, "withdraw", ProcessStatus.FAILED,
+            sendWalletActivities(walletId, amount, ActivityType.WITHDRAW, ProcessStatus.FAILED,
                     String.format("Saldo insuficiente ao realizar o saque no valor de RS$ %f", amount));
             throw new Exception.InvalidAmount("Falha ao efetivar saque: Saldo insuficiente");
         }
@@ -102,18 +102,13 @@ public class WalletServiceImpl implements WalletService {
         try {
             wallet.setBalance(wallet.getBalance().subtract(amount));
             walletRepository.save(wallet);
-            sendWalletActivities(walletId, amount, "withdraw", ProcessStatus.COMPLETED, "Saque realizado com sucesso");
+            sendWalletActivities(walletId, amount, ActivityType.WITHDRAW, ProcessStatus.COMPLETED, "Saque realizado com sucesso");
         } catch (Exception e) {
-            sendWalletActivities(walletId, amount, "withdraw", ProcessStatus.FAILED, "Não foi possível processar o saque");
+            sendWalletActivities(walletId, amount, ActivityType.WITHDRAW, ProcessStatus.FAILED, "Não foi possível processar o saque");
             log.error("Falha ao efetivar saque: {}", e.getMessage());
             throw new Exception.FailedToWithdraw("Falha ao efetivar saque.");
         }
         return true;
-    }
-
-    @Override
-    public List<WalletActivityResource> activities(Long walletId) {
-        return null;
     }
 
     private Wallet findWalletById(Long walletId) {
@@ -121,7 +116,7 @@ public class WalletServiceImpl implements WalletService {
         return walletOptional.orElseThrow(() -> new Exception.NotFound("Carteira não encontrada com o ID: " + walletId));
     }
 
-    private void sendWalletActivities(Long walletId, BigDecimal amount, String activityType, ProcessStatus status, String description) {
+    private void sendWalletActivities(Long walletId, BigDecimal amount, ActivityType activityType, ProcessStatus status, String description) {
         WalletActivityResource walletActivityResource = new WalletActivityResource();
         walletActivityResource.setWalletId(walletId);
         walletActivityResource.setActivityDate(LocalDateTime.now());

@@ -3,6 +3,7 @@ package com.purebank.walletservice.wallet.api;
 import com.purebank.walletservice.wallet.resource.WalletActivityResource;
 import com.purebank.walletservice.wallet.resource.WalletResource;
 import jakarta.validation.constraints.Positive;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
@@ -16,13 +17,10 @@ public interface WalletApi {
     @PostMapping
     ResponseEntity<WalletResource> createWallet(@RequestBody WalletResource walletResource);
 
-    @GetMapping("/{walletId}")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{walletId}")
     ResponseEntity<WalletResource> getWalletById(@PathVariable Long walletId);
 
-//    @PostMapping("/{walletId}/")
-//    ResponseEntity<List<WalletResource>> getWalletsById(@RequestBody @Size(max = 2) List<Long> walletId);
-
-    @GetMapping("/{walletId}/balance")
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE, value = "/{walletId}/balance")
     ResponseEntity<BigDecimal> getBalance(@PathVariable Long walletId);
 
     @PutMapping
@@ -34,6 +32,6 @@ public interface WalletApi {
     @PatchMapping("/{walletId}/withdraw")
     ResponseEntity<Void> withdraw(@PathVariable Long walletId, @RequestParam @Positive BigDecimal amount);
 
-    @PatchMapping("/{walletId}/activities")
+    @GetMapping("/{walletId}/activities")
     ResponseEntity<List<WalletActivityResource>> activities(@PathVariable Long walletId);
 }
