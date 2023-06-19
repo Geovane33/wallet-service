@@ -2,7 +2,9 @@ package com.purebank.walletservice.wallet.service.impl;
 
 import com.purebank.walletservice.wallet.domain.WalletActivity;
 import com.purebank.walletservice.wallet.repository.WalletActivityRepository;
+import com.purebank.walletservice.wallet.resource.WalletActivityResource;
 import com.purebank.walletservice.wallet.service.WalletActivityService;
+import com.purebank.walletservice.wallet.enums.ProcessStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -25,7 +27,7 @@ public class WalletActivityServiceImpl implements WalletActivityService {
 
             walletActivity.setStatus(walletActivityResource.getStatus());
             walletActivity.setUuidActivity(walletActivityResource.getUuidActivity());
-            if (walletActivityResource.getStatus().equals("COMPLETED")) {
+            if (ProcessStatus.COMPLETED.equals(walletActivityResource.getStatus())) {
                 walletActivity.setUuidActivity(StringUtils.EMPTY);
             }
             walletActivity.setAmount(walletActivityResource.getAmount());

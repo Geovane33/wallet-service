@@ -1,6 +1,6 @@
 package com.purebank.walletservice.wallet.resource;
 
-import com.purebank.walletservice.wallet.utils.ProcessStatus;
+import com.purebank.walletservice.wallet.enums.ProcessStatus;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;

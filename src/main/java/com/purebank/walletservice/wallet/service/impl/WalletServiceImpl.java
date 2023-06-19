@@ -4,8 +4,10 @@ import com.purebank.walletservice.wallet.domain.Wallet;
 import com.purebank.walletservice.wallet.exceptions.Exception;
 import com.purebank.walletservice.wallet.message.producer.WalletMessageProducer;
 import com.purebank.walletservice.wallet.repository.WalletRepository;
+import com.purebank.walletservice.wallet.resource.WalletActivityResource;
 import com.purebank.walletservice.wallet.resource.WalletResource;
 import com.purebank.walletservice.wallet.service.WalletService;
+import com.purebank.walletservice.wallet.enums.ProcessStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -78,10 +80,10 @@ public class WalletServiceImpl implements WalletService {
         try {
             wallet.setBalance(wallet.getBalance().add(amount));
             walletRepository.save(wallet);
-            sendWalletActivities(walletId, amount, "deposit", "COMPLETED", "Depósito realizado com sucesso");
+            sendWalletActivities(walletId, amount, "deposit", ProcessStatus.COMPLETED, "Depósito realizado com sucesso");
         } catch (Exception e) {
             log.error("Falha ao efetivar depósito: {}", e.getMessage());
-            sendWalletActivities(walletId, amount, "deposit", "FAILED", "Não foi possível processar o depósito");
+            sendWalletActivities(walletId, amount, "deposit", ProcessStatus.FAILED, "Não foi possível processar o depósito");
             throw new Exception.FailedToDeposit("Falha ao efetivar deposito.");
         }
         return true;
@@ -91,7 +93,7 @@ public class WalletServiceImpl implements WalletService {
     public Boolean withdraw(Long walletId, BigDecimal amount) {
         Wallet wallet = findWalletById(walletId);
         if (amount.compareTo(wallet.getBalance()) > 0) {
-            sendWalletActivities(walletId, amount, "withdraw", "FAILED",
+            sendWalletActivities(walletId, amount, "withdraw", ProcessStatus.FAILED,
                     String.format("Saldo insuficiente ao realizar o saque no valor de RS$ %f", amount));
             throw new Exception.InvalidAmount("Falha ao efetivar saque: Saldo insuficiente");
         }
@@ -99,9 +101,9 @@ public class WalletServiceImpl implements WalletService {
         try {
             wallet.setBalance(wallet.getBalance().subtract(amount));
             walletRepository.save(wallet);
-            sendWalletActivities(walletId, amount, "withdraw", "COMPLETED", "Saque realizado com sucesso");
+            sendWalletActivities(walletId, amount, "withdraw", ProcessStatus.COMPLETED, "Saque realizado com sucesso");
         } catch (Exception e) {
-            sendWalletActivities(walletId, amount, "withdraw", "FAILED", "Não foi possível processar o saque");
+            sendWalletActivities(walletId, amount, "withdraw", ProcessStatus.FAILED, "Não foi possível processar o saque");
             log.error("Falha ao efetivar saque: {}", e.getMessage());
             throw new Exception.FailedToWithdraw("Falha ao efetivar saque.");
         }
@@ -113,7 +115,7 @@ public class WalletServiceImpl implements WalletService {
         return walletOptional.orElseThrow(() -> new Exception.NotFound("Carteira não encontrada com o ID: " + walletId));
     }
 
-    public void sendWalletActivities(Long walletId, BigDecimal amount, String activityType, String status, String description) {
+    public void sendWalletActivities(Long walletId, BigDecimal amount, String activityType, ProcessStatus status, String description) {
         WalletActivityResource walletActivityResource = new WalletActivityResource();
         walletActivityResource.setWalletId(walletId);
         walletActivityResource.setActivityDate(LocalDateTime.now());
