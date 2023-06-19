@@ -13,6 +13,6 @@ import java.util.Optional;
 @Repository
 public interface WalletActivityRepository extends JpaRepository<WalletActivity, Long> {
 
-    Optional<WalletActivity> findByMovementIdentifier(Long movementIdentifier);
+    Optional<WalletActivity> findByUuidActivity(String uuidActivity);
 
 }

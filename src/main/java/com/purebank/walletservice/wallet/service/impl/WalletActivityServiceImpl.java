@@ -2,9 +2,9 @@ package com.purebank.walletservice.wallet.service.impl;
 
 import com.purebank.walletservice.wallet.domain.WalletActivity;
 import com.purebank.walletservice.wallet.repository.WalletActivityRepository;
-import com.purebank.walletservice.wallet.resource.WalletActivityResource;
 import com.purebank.walletservice.wallet.service.WalletActivityService;
 import lombok.extern.slf4j.Slf4j;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -20,11 +20,14 @@ public class WalletActivityServiceImpl implements WalletActivityService {
     public void createOrUpdate(WalletActivityResource walletActivityResource) {
         try {
             WalletActivity walletActivity = walletActivityRepository
-                    .findByMovementIdentifier(walletActivityResource.getMovementIdentifier())
+                    .findByUuidActivity(walletActivityResource.getUuidActivity())
                     .orElse(new WalletActivity());
 
             walletActivity.setStatus(walletActivityResource.getStatus());
-            walletActivity.setMovementIdentifier(walletActivityResource.getMovementIdentifier());
+            walletActivity.setUuidActivity(walletActivityResource.getUuidActivity());
+            if (walletActivityResource.getStatus().equals("COMPLETED")) {
+                walletActivity.setUuidActivity(StringUtils.EMPTY);
+            }
             walletActivity.setAmount(walletActivityResource.getAmount());
             walletActivity.setActivityType(walletActivityResource.getActivityType());
             walletActivity.setActivityDate(walletActivityResource.getActivityDate());

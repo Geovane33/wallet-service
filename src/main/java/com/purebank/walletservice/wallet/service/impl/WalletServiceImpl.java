@@ -4,13 +4,9 @@ import com.purebank.walletservice.wallet.domain.Wallet;
 import com.purebank.walletservice.wallet.exceptions.Exception;
 import com.purebank.walletservice.wallet.message.producer.WalletMessageProducer;
 import com.purebank.walletservice.wallet.repository.WalletRepository;
-import com.purebank.walletservice.wallet.resource.TransferResource;
-import com.purebank.walletservice.wallet.resource.MovimentStatus;
-import com.purebank.walletservice.wallet.resource.WalletActivityResource;
 import com.purebank.walletservice.wallet.resource.WalletResource;
 import com.purebank.walletservice.wallet.service.WalletService;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.amqp.rabbit.core.RabbitTemplate;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
@@ -127,33 +123,6 @@ public class WalletServiceImpl implements WalletService {
         walletActivityResource.setDescription(description);
         walletActivityResource.setCreationDate(LocalDateTime.now());
         walletMessageProducer.sendWalletActivity(walletActivityResource);
-    }
-
-    public void updateAccountsBalance(TransferResource transferResource) {
-        Optional<Wallet> walletOriginOptional = walletRepository.findWalletById(transferResource.getWalletOrigin());
-        Optional<Wallet> walletDestinyOptional = walletRepository.findWalletById(transferResource.getWalletDestiny());
-
-        String errorMessage = StringUtils.EMPTY;
-        transferResource.setStatus(MovimentStatus.FAILED);
-        if (walletOriginOptional.isEmpty()) {
-            errorMessage = "Falha ao processar a transferência: Conta de origem não existe";
-        } else if (walletDestinyOptional.isEmpty()) {
-            errorMessage = "Falha ao processar a transferência: Conta de destino não existe";
-        } else if (walletOriginOptional.get().getBalance().compareTo(transferResource.getAmount()) < 0) {
-            errorMessage = "Falha ao processar a transferência: saldo insuficiente";
-        }
-        if (StringUtils.isBlank(errorMessage)) {
-            Wallet walletOrigin = walletOriginOptional.get();
-            Wallet walletDestiny = walletDestinyOptional.get();
-
-            walletOrigin.setBalance(walletOrigin.getBalance().subtract(transferResource.getAmount()));
-            walletRepository.save(walletOrigin);
-
-            walletDestiny.setBalance(walletDestiny.getBalance().add(transferResource.getAmount()));
-            walletRepository.save(walletDestiny);
-            transferResource.setStatus(MovimentStatus.COMPLETED);
-        }
-        this.walletMessageProducer.updateStatusTransfer(transferResource, errorMessage);
     }
 
 }
