@@ -1,10 +1,10 @@
 package com.purebank.walletservice.wallet.service.impl;
 
 import com.purebank.walletservice.wallet.domain.WalletActivity;
+import com.purebank.walletservice.wallet.enums.ProcessStatus;
 import com.purebank.walletservice.wallet.repository.WalletActivityRepository;
 import com.purebank.walletservice.wallet.resource.WalletActivityResource;
 import com.purebank.walletservice.wallet.service.WalletActivityService;
-import com.purebank.walletservice.wallet.enums.ProcessStatus;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,6 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -28,6 +27,7 @@ public class WalletActivityServiceImpl implements WalletActivityService {
                     .findByUuidActivity(walletActivityResource.getUuidActivity())
                     .orElse(new WalletActivity());
 
+            walletActivity.setWalletId(walletActivityResource.getWalletId());
             walletActivity.setStatus(walletActivityResource.getStatus());
             walletActivity.setUuidActivity(walletActivityResource.getUuidActivity());
             if (ProcessStatus.COMPLETED.equals(walletActivityResource.getStatus())) {
@@ -40,7 +40,7 @@ public class WalletActivityServiceImpl implements WalletActivityService {
             walletActivity.setLastUpdate(LocalDateTime.now());
             walletActivityRepository.save(walletActivity);
 
-        } catch (Exception ex) {
+        } catch (RuntimeException ex) {
             log.error("Erro ao salvar movimentação da conta: {}", ex.getMessage());
             throw ex;
         }

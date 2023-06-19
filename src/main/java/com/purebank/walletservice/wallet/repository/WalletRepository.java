@@ -17,5 +17,5 @@ public interface WalletRepository extends JpaRepository<Wallet, Long> {
     Optional<Wallet> findWalletById(@Param("id") Long walletId);
 
     @Query("SELECT w.balance FROM Wallet w WHERE w.id = :id")
-    BigDecimal getBalanceByWalletId(@Param("id") Long walletId);
+    Optional<BigDecimal> getBalanceByWalletId(@Param("id") Long walletId);
 }

@@ -51,7 +51,7 @@ public class WalletController implements WalletApi {
 
     @Override
     public ResponseEntity<Void> deposit(Long walletId, BigDecimal amount) {
-        if (BigDecimal.ZERO.compareTo(amount) >= 0 || new BigDecimal("1000000").compareTo(amount) <= 0) {
+        if (BigDecimal.ZERO.compareTo(amount) >= 0 || new BigDecimal("1000000.00").compareTo(amount) <= 0) {
             throw new Exception.InvalidAmount(DEPOSIT_AMOUNT_MUST_BE_GREATER_THAN_XXXX_AND_LESS_THAN_XXXX);
         }
         walletService.deposit(walletId, amount);
@@ -60,7 +60,7 @@ public class WalletController implements WalletApi {
 
     @Override
     public ResponseEntity<Void> withdraw(Long walletId, BigDecimal amount) {
-        if (BigDecimal.ZERO.compareTo(amount) <= 0 || new BigDecimal("1000000").compareTo(amount) <= 0) {
+        if (BigDecimal.ZERO.compareTo(amount) >= 0 || new BigDecimal("1000000.00").compareTo(amount) <= 0) {
             throw new Exception.InvalidAmount(WITHDRAWAL_AMOUNT_MUST_BE_GREATER_THAN_XXXX_AND_LESS_THAN_XXXX);
         }
         walletService.withdraw(walletId, amount);
