@@ -1,6 +1,6 @@
-package com.purebank.walletservice.wallet.service.impl;
+package com.purebank.walletservice.wallet.resource;
 
-public enum TransferStatus {
+public enum MovimentStatus {
     PENDING("Pending"),
     COMPLETED("Completed"),
     FAILED("Failed"),
@@ -8,7 +8,7 @@ public enum TransferStatus {
 
     private String label;
 
-    TransferStatus(String label) {
+    MovimentStatus(String label) {
         this.label = label;
     }
 

@@ -2,7 +2,7 @@ package com.purebank.accountservice.wallet;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.purebank.walletservice.wallet.WalletController;
-import com.purebank.walletservice.wallet.api.resource.WalletResource;
+import com.purebank.walletservice.wallet.resource.WalletResource;
 import com.purebank.walletservice.wallet.service.WalletService;
 import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.BeforeEach;

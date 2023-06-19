@@ -1,6 +1,6 @@
 package com.purebank.walletservice.wallet.service;
 
-import com.purebank.walletservice.wallet.api.resource.WalletResource;
+import com.purebank.walletservice.wallet.resource.WalletResource;
 
 import java.math.BigDecimal;
 

@@ -1,6 +1,6 @@
 package com.purebank.accountservice.wallet.service;
 
-import com.purebank.walletservice.wallet.api.resource.WalletResource;
+import com.purebank.walletservice.wallet.resource.WalletResource;
 import com.purebank.walletservice.wallet.domain.Wallet;
 import com.purebank.walletservice.wallet.repository.WalletRepository;
 import com.purebank.walletservice.wallet.service.WalletService;

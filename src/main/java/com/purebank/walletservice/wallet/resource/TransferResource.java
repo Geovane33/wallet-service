@@ -1,4 +1,4 @@
-package com.purebank.walletservice.wallet.service.impl;
+package com.purebank.walletservice.wallet.resource;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -28,7 +28,7 @@ public class TransferResource implements Serializable {
     private String statusDescription;
 
     @Schema(description = "Status da transferência")
-    private TransferStatus status;
+    private MovimentStatus status;
 
     @Schema(description = "Conta externa (true se for uma conta externa, false se for interna)")
     private Boolean externalAccount;
