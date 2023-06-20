@@ -8,13 +8,15 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 
 @Data
 @Builder
 @AllArgsConstructor
 @NoArgsConstructor
-public class WalletResource {
+@Schema(description = "Representa uma carteira digital")
+public class WalletResource implements Serializable{
 
     @Schema(description = "id da carteira digital")
     private Long id;

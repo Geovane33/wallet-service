@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 
 @Data
 @Entity
-@Table(name = "wallet_activities")
+@Table(name = "wallet_activity")
 public class WalletActivity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -26,6 +26,9 @@ public class WalletActivity {
 
     @Column(name = "status")
     private ProcessStatus status;
+
+    @Column(name = "description")
+    private String description;
 
     @Column(name = "amount")
     private BigDecimal amount;

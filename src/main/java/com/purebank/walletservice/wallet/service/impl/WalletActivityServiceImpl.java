@@ -23,9 +23,12 @@ public class WalletActivityServiceImpl implements WalletActivityService {
 
     public void createOrUpdate(WalletActivityResource walletActivityResource) {
         try {
-            WalletActivity walletActivity = walletActivityRepository
-                    .findByUuidActivity(walletActivityResource.getUuidActivity())
-                    .orElse(new WalletActivity());
+            WalletActivity walletActivity = new WalletActivity();
+            if (StringUtils.isNotBlank(walletActivityResource.getUuidActivity())) {
+                walletActivity = walletActivityRepository
+                        .findByUuidActivity(walletActivityResource.getUuidActivity())
+                        .orElse(new WalletActivity());
+            }
 
             walletActivity.setWalletId(walletActivityResource.getWalletId());
             walletActivity.setStatus(walletActivityResource.getStatus());
@@ -38,6 +41,7 @@ public class WalletActivityServiceImpl implements WalletActivityService {
             walletActivity.setActivityDate(walletActivityResource.getActivityDate());
             walletActivity.setCreationDate(walletActivityResource.getCreationDate());
             walletActivity.setLastUpdate(LocalDateTime.now());
+            walletActivity.setDescription(walletActivityResource.getDescription());
             walletActivityRepository.save(walletActivity);
 
         } catch (RuntimeException ex) {
@@ -47,12 +51,12 @@ public class WalletActivityServiceImpl implements WalletActivityService {
     }
 
     @Override
-    public List<WalletActivityResource> activities(Long walletId) {
-        List<WalletActivity> walletActivities = walletActivityRepository
-                .findByWalletIdOrderByCreationDateAsc(walletId)
+    public List<WalletActivityResource> activity(Long walletId) {
+        List<WalletActivity> walletActivity = walletActivityRepository
+                .findByWalletIdOrderByCreationDateDesc(walletId)
                 .orElse(Collections.emptyList());
 
-        return walletActivities.stream()
+        return walletActivity.stream()
                 .map(a -> {
                     WalletActivityResource resource = new WalletActivityResource();
                     resource.setUuidActivity(a.getUuidActivity());
@@ -60,6 +64,8 @@ public class WalletActivityServiceImpl implements WalletActivityService {
                     resource.setActivityType(a.getActivityType());
                     resource.setStatus(a.getStatus());
                     resource.setAmount(a.getAmount());
+                    resource.setActivityDate(a.getActivityDate());
+                    resource.setDescription(a.getDescription());
                     return resource;
                 }).toList();
     }

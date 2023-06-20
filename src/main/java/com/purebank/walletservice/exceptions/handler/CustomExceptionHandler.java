@@ -1,7 +1,7 @@
-package com.purebank.walletservice.wallet.exceptions.handler;
+package com.purebank.walletservice.exceptions.handler;
 
-import com.purebank.walletservice.wallet.exceptions.ApiErrorMessage;
-import com.purebank.walletservice.wallet.exceptions.Exception;
+import com.purebank.walletservice.exceptions.ApiErrorMessage;
+import com.purebank.walletservice.exceptions.Exception;
 import org.springframework.http.HttpHeaders;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;

@@ -69,6 +69,6 @@ public class WalletController implements WalletApi {
 
     @Override
     public ResponseEntity<List<WalletActivityResource>> activities(Long walletId) {
-        return ResponseEntity.ok(walletActivityService.activities(walletId));
+        return ResponseEntity.ok(walletActivityService.activity(walletId));
     }
 }
