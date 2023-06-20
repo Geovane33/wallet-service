@@ -1,5 +1,6 @@
 package com.purebank.walletservice.wallet.resource;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.purebank.walletservice.wallet.enums.ActivityType;
 import com.purebank.walletservice.wallet.enums.ProcessStatus;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -38,5 +39,6 @@ public class WalletActivityResource implements Serializable {
     private LocalDateTime creationDate;
 
     @Schema(description = "O UUID da atividade da carteira")
+    @JsonIgnore
     private String uuidActivity;
 }

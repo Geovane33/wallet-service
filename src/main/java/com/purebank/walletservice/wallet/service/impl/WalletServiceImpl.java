@@ -34,6 +34,7 @@ public class WalletServiceImpl implements WalletService {
             Wallet wallet = new Wallet();
             wallet.setName(walletResource.getName());
             wallet.setCreationDate(LocalDateTime.now());
+            wallet.setBalance(walletResource.getBalance());
             walletRepository.save(wallet);
             walletResource.setId(wallet.getId());
             return walletResource;
