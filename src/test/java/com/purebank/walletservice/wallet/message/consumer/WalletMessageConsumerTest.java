@@ -32,7 +32,7 @@ public class WalletMessageConsumerTest {
     @DisplayName("Teste do consumer wallet-activity")
     void walletActivityTest() {
         WalletActivityResource walletActivityResource = new WalletActivityResource();
-        walletMessageConsumer.walletTimeline(walletActivityResource);
+        walletMessageConsumer.walletActivities(walletActivityResource);
         Mockito.verify(walletActivityService, Mockito.times(1)).createOrUpdate(walletActivityResource);
     }
 }

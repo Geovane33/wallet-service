@@ -12,3 +12,4 @@ spring:
     username: lvtyxxuy
     virtual-host: lvtyxxuy
     password: HFPrV1eq1gLSAjQ0E_0mo5WDGgeLx-uj
+server.port: 8082
