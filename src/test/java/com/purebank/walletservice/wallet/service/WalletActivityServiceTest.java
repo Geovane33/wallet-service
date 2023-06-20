@@ -64,10 +64,10 @@ public class WalletActivityServiceTest {
         WalletActivityRepository walletActivityRepository = Mockito.mock(WalletActivityRepository.class);
         List<WalletActivity> mockActivities = new ArrayList<>();
 
-        Mockito.when(walletActivityRepository.findByWalletIdOrderByCreationDateAsc(Mockito.anyLong()))
+        Mockito.when(walletActivityRepository.findByWalletIdOrderByCreationDateDesc(Mockito.anyLong()))
                 .thenReturn(Optional.of(mockActivities));
 
-        List<WalletActivityResource> result = walletActivityService.activities(123L);
+        List<WalletActivityResource> result = walletActivityService.activity(123L);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(mockActivities.size(), result.size());
@@ -78,10 +78,10 @@ public class WalletActivityServiceTest {
     public void findByWalletIdOrderByCreationDateAscTest() {
         List<WalletActivity> mockActivities = createWalletActivityList();
 
-        Mockito.when(walletActivityRepository.findByWalletIdOrderByCreationDateAsc(Mockito.anyLong()))
+        Mockito.when(walletActivityRepository.findByWalletIdOrderByCreationDateDesc(Mockito.anyLong()))
                 .thenReturn(Optional.of(mockActivities));
 
-        List<WalletActivityResource> result = walletActivityService.activities(123L);
+        List<WalletActivityResource> result = walletActivityService.activity(123L);
 
         Assertions.assertNotNull(result);
         Assertions.assertEquals(mockActivities.size(), result.size());

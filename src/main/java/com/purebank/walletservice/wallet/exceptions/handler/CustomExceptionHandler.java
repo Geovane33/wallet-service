@@ -23,7 +23,7 @@ public class CustomExceptionHandler extends ResponseEntityExceptionHandler {
         List<String> errors = ex.getBindingResult()
                 .getFieldErrors()
                 .stream()
-                .map(a -> {return a.getCode();})
+                .map(a -> {return a.getDefaultMessage();})
                 .collect(Collectors.toList());
 
         ApiErrorMessage apiErrorMessage = new ApiErrorMessage(HttpStatus.valueOf(status.value()), errors);

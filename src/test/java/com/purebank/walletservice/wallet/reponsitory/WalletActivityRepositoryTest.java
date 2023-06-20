@@ -48,17 +48,17 @@ public class WalletActivityRepositoryTest {
     public void findByWalletIdOrderByCreationDateAsc_ExistingWalletId_ReturnsSortedWalletActivities() {
         Long walletId = 1L;
         WalletActivity activity1 = createWalletActivity("uuid1");
-        activity1.setCreationDate(LocalDateTime.now().minusDays(3));
+        activity1.setCreationDate(LocalDateTime.now().minusDays(1));
         WalletActivity activity2 = createWalletActivity("uuid2");
         activity2.setCreationDate(LocalDateTime.now().minusDays(2));
         WalletActivity activity3 = createWalletActivity("uuid3");
-        activity3.setCreationDate(LocalDateTime.now().minusDays(1));
+        activity3.setCreationDate(LocalDateTime.now().minusDays(3));
 
         walletActivityRepository.save(activity3);
         walletActivityRepository.save(activity2);
         walletActivityRepository.save(activity1);
 
-        Optional<List<WalletActivity>> result = walletActivityRepository.findByWalletIdOrderByCreationDateAsc(walletId);
+        Optional<List<WalletActivity>> result = walletActivityRepository.findByWalletIdOrderByCreationDateDesc(walletId);
 
         Assertions.assertTrue(result.isPresent());
         List<WalletActivity> activities = result.get();
@@ -73,7 +73,7 @@ public class WalletActivityRepositoryTest {
     public void findByWalletIdOrderByCreationDateAsc_NonExistingWalletId_ReturnsEmptyOptional() {
         Long walletId = 999L;
 
-        Optional<List<WalletActivity>> result = walletActivityRepository.findByWalletIdOrderByCreationDateAsc(walletId);
+        Optional<List<WalletActivity>> result = walletActivityRepository.findByWalletIdOrderByCreationDateDesc(walletId);
 
         Assertions.assertTrue(result.get().isEmpty());
     }
@@ -84,6 +84,7 @@ public class WalletActivityRepositoryTest {
         activity.setUuidActivity(uuidActivity);
         activity.setActivityType(ActivityType.DEPOSIT);
         activity.setStatus(ProcessStatus.COMPLETED);
+        activity.setDescription("Tranferencia realizada");
         activity.setAmount(BigDecimal.valueOf(100));
         activity.setActivityDate(LocalDateTime.now());
         activity.setCreationDate(LocalDateTime.now());

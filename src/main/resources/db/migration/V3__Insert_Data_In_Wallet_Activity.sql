@@ -1,10 +1,11 @@
-CREATE TABLE IF NOT EXISTS wallet_activities (
+CREATE TABLE IF NOT EXISTS wallet_activity (
   id BIGINT AUTO_INCREMENT PRIMARY KEY,
   wallet_id BIGINT NOT NULL,
-  uuid_activity VARCHAR(255) NOT NULL,
+  uuid_activity VARCHAR(255),
   activity_type VARCHAR(255) NOT NULL,
   status VARCHAR(255) NOT NULL,
   amount DECIMAL(10, 2) NOT NULL,
+  description VARCHAR(255) NOT NULL,
   activity_date TIMESTAMP NOT NULL,
   creation_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   last_update TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP,
