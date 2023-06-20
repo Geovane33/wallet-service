@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import java.time.LocalDateTime;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Slf4j
 @Service
@@ -67,7 +68,7 @@ public class WalletActivityServiceImpl implements WalletActivityService {
                     resource.setActivityDate(a.getActivityDate());
                     resource.setDescription(a.getDescription());
                     return resource;
-                }).toList();
+                }).collect(Collectors.toList());
     }
 
 }
