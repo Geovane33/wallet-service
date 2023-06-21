@@ -122,4 +122,4 @@ Observações:
 - O parâmetro `--network local` conecta o contêiner à rede local que foi criada.
 - O parâmetro `--name wallet-service` define o nome do contêiner como "payment-transfer-service". Você pode escolher um nome diferente, se desejar.
 
-#![wallet comunicações](wallet.png)
+![wallet comunicações](wallet.png)
