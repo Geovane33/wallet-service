@@ -18,7 +18,7 @@ public class Exception extends RuntimeException {
 
     public static class BadRequest extends Exception {
         public BadRequest(String message) {
-            super(message, HttpStatus.NOT_FOUND);
+            super(message, HttpStatus.BAD_REQUEST);
         }
     }
 
