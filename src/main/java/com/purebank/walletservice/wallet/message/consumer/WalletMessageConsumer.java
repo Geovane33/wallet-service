@@ -16,7 +16,7 @@ public class WalletMessageConsumer {
 
     @RabbitListener(queues = WALLET_ACTIVITY)
     public void walletActivities(WalletActivityResource walletActivityResource) {
-        log.info("Consumindo da fica walletActivityResource");
+        log.info("Consumindo da fila walletActivityResource");
         walletActivityService.createOrUpdate(walletActivityResource);
     }
 }

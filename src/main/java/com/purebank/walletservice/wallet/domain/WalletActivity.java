@@ -19,12 +19,16 @@ public class WalletActivity {
 
     @Column(name = "wallet_id")
     private Long walletId;
+
     @Column(name = "uuid_activity")
     private String uuidActivity;
+
     @Column(name = "activity_type")
+    @Enumerated(EnumType.STRING)
     private ActivityType activityType;
 
     @Column(name = "status")
+    @Enumerated(EnumType.STRING)
     private ProcessStatus status;
 
     @Column(name = "description")
@@ -38,6 +42,7 @@ public class WalletActivity {
 
     @Column(name = "creation_date", nullable = false, updatable = false)
     private LocalDateTime creationDate;
+
     @Column(name = "last_update")
     private LocalDateTime lastUpdate;
 }

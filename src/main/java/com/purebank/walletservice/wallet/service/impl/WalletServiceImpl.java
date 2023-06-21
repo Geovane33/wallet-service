@@ -62,17 +62,17 @@ public class WalletServiceImpl implements WalletService {
 
     @Override
     public WalletResource updateWallet(WalletResource walletResource) {
+        Wallet walletById = findWalletById(walletResource.getId());
         try {
-            Wallet wallet = new Wallet();
-            wallet.setId(walletResource.getId());
-            wallet.setBalance(walletResource.getBalance());
-            wallet.setName(walletResource.getName());
-            walletRepository.save(wallet);
+            walletById.setBalance(walletResource.getBalance());
+            walletById.setName(walletResource.getName());
+            walletById.setLastUpdate(LocalDateTime.now());
+            walletRepository.save(walletById);
+            return walletResource;
         } catch (RuntimeException e) {
             log.error("Erro ao atualizar carteira com ID: {} ex: {}", walletResource.getId(), e.getMessage());
             throw new Exception("Erro ao atualizar a carteira.", HttpStatus.INTERNAL_SERVER_ERROR);
         }
-        return walletResource;
     }
 
     @Override
@@ -83,12 +83,12 @@ public class WalletServiceImpl implements WalletService {
             wallet.setBalance(wallet.getBalance().add(amount));
             walletRepository.save(wallet);
             sendWalletActivities(walletId, amount, ActivityType.DEPOSIT, ProcessStatus.COMPLETED, "Depósito realizado com sucesso");
+            return true;
         } catch (Exception e) {
             log.error("Falha ao efetivar depósito: {}", e.getMessage());
             sendWalletActivities(walletId, amount, ActivityType.DEPOSIT, ProcessStatus.FAILED, "Não foi possível processar o depósito");
             throw new Exception.FailedToDeposit("Falha ao efetivar deposito.");
         }
-        return true;
     }
 
     @Override
@@ -104,12 +104,12 @@ public class WalletServiceImpl implements WalletService {
             wallet.setBalance(wallet.getBalance().subtract(amount));
             walletRepository.save(wallet);
             sendWalletActivities(walletId, amount, ActivityType.WITHDRAW, ProcessStatus.COMPLETED, "Saque realizado com sucesso");
+            return true;
         } catch (Exception e) {
             sendWalletActivities(walletId, amount, ActivityType.WITHDRAW, ProcessStatus.FAILED, "Não foi possível processar o saque");
             log.error("Falha ao efetivar saque: {}", e.getMessage());
             throw new Exception.FailedToWithdraw("Falha ao efetivar saque.");
         }
-        return true;
     }
 
     private Wallet findWalletById(Long walletId) {
