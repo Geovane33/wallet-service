@@ -1,54 +1,127 @@
 # wallet-service 🎩💰
+
 Este repositório contém o código-fonte e os recursos relacionados ao Wallet-Service, um microserviço dedicado a gerenciar carteiras digitais de usuários.
 
 ## Principal recurso 🚀
 ✨ Gerenciamento de carteiras: O Wallet-Service permite aos usuários criar, atualizar e excluir carteiras digitais. Ele também oferece recursos de consulta para recuperar informações específicas de uma carteira, como saldo atual e histórico de transações.
 
-## Como começar 🏁
-
-1. Clone este repositório em sua máquina local.
-
-
 # Setup da aplicação (local)
-## Pré-requisito
-Antes de rodar a aplicação é preciso garantir que as seguintes dependências estejam corretamente instaladas:
+## Pré-requisitos
+Antes de executar a aplicação, certifique-se de ter as seguintes dependências instaladas corretamente em seu ambiente de desenvolvimento:
 ```
-Java 17
-Maven 3.9.2
-Mysql 8.0.27
+- Java 17
+- Maven 3.9.2
+- MySQL 8.0.27
+- RabbitMQ 3.11.5
 ```
 
-Observação: Para fins de avaliação ou execução em um ambiente local de teste, o projeto está configurado com o banco de dados H2 por conveniência.
-Se você deseja usar um servidor MySQL, siga as instruções as seguintes para configurar corretamente a conexão com o MySQL.
-```
+**Observação:** Para fins de avaliação ou execução em um ambiente local de teste, o projeto já está configurado com o banco de dados **H2** e **RabbitMQ**. No entanto, se você deseja usar seu próprio servidor **MySQL** e/ou **RabbitMQ**, siga as seguintes instruções:
+
+### MySQL
+No arquivo de configuração `application.yml`, adicione as seguintes configurações para o MySQL:
+
+
+```yaml
 spring:
   datasource:
-    drive-class-name: com.mysql.cj.jdbc.Driver
-    url: coloque_aqui_a_url
-    username: coloque_aqui_o_username
-    password: coloque_aqui_o_password
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: sua_url
+    username: seu_usuario
+    password: sua_senha
 ```
 
+Certifique-se de substituir `sua_url`, `seu_usuario` e `sua_senha` pelas informações corretas do seu servidor MySQL.
 
-## Instalação da aplicação
+### RabbitMQ
+No arquivo de configuração  `application.yml`, adicione as seguintes configurações para o RabbitMQ:
 
-Primeiramente, faça o clone do repositório:
+
+
+```yaml
+spring:
+  rabbitmq:
+    host: seu_host
+    port: sua_porta
+    username: seu_usuario
+    password: sua_senha
 ```
-https://github.com/emmanuelneri/productivity-with-spring.git
+
+Certifique-se de substituir `seu_host`, `sua_porta`, `seu_usuario` e `sua_senha` pelas informações corretas do seu servidor RabbitMQ.
+
+## Instalação e execução da aplicação
+
+1. Clone o repositório:
 ```
-Feito isso, acesse o projeto:
+git clone git@github.com:Geovane33/wallet-service.git
 ```
-cd productivity-with-spring
+
+2. Acesse o diretório do projeto:
 ```
-É preciso compilar o código e baixar as dependências do projeto:
+cd wallet-service
+```
+
+3. Compile o código e baixe as dependências do projeto:
 ```
 mvn clean package
 ```
-Finalizado esse passo, vamos iniciar a aplicação:
+
+4. Inicie a aplicação:
 ```
 mvn spring-boot:run
 ```
-Pronto. A aplicação está disponível em http://localhost:8080
+
+Após executar esses passos, a aplicação estará disponível em http://localhost:8080.
+
+
+## Observações
+- O projeto está utilizando FlywayDB e nesse caso, para facilitar os testes locais, o banco de dados já terá 4 Wallets.
+- Acesse a documentação da API em http://localhost:8080/swagger-ui/index.html para obter mais detalhes sobre os endpoints disponíveis.
+
+## Setup da aplicação usando Docker
+
+## Pré-requisitos
+Antes de executar a aplicação, considerando que o projeto ja vem com H2 e RabbitMQ configurados no projeto, certifique-se de ter as seguintes dependências instaladas corretamente em seu ambiente de desenvolvimento:
 ```
-Tomcat started on port(s): 8080 (http)
-Started AppConfig in xxxx seconds (JVM running for xxxx)
+- Java 17
+- Docker 24.0.2
+- Maven 3.9.2
+```
+1. Clone o repositório:
+```
+git clone git@github.com:Geovane33/wallet-service.git
+```
+
+2. Acesse o diretório do projeto:
+```
+cd wallet-service
+```
+
+3. Compile o código e baixe as dependências do projeto:
+```
+mvn clean package
+```
+
+4. Construa a imagem Docker:
+```
+docker build -t wallet-service .
+```
+
+5. Crie uma rede para conectar os containers:
+```
+docker network create local
+```
+
+6. Execute o contêiner Docker conectado à rede local:
+```
+docker run -d -p 8080:8080 --network local --name wallet-service wallet-service
+```
+
+Após executar esses passos, a aplicação estará disponível em http://localhost:8080.
+Swagger: http://localhost:8080/swagger-ui/index.html
+
+Observações:
+- Certifique-se de ter o Docker instalado em sua máquina.
+- Certifique-se de ter as dependências corretamente instaladas e o projeto compilado antes de construir a imagem Docker.
+- A opção `-p 8080:8080` mapeia a porta 8081 do contêiner para a porta 8081 do host. Você pode alterar a porta do host, se desejar.
+- O parâmetro `--network local` conecta o contêiner à rede local que foi criada.
+- O parâmetro `--name wallet-service` define o nome do contêiner como "payment-transfer-service". Você pode escolher um nome diferente, se desejar.
