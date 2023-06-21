@@ -106,7 +106,7 @@ mvn clean package
 docker build -t wallet-service .
 ```
 
-5. Crie uma rede para conectar os containers:
+5. O serviço forcene informaçoes via feignClient para [payment-transfer-service](https://github.com/Geovane33/payment-transfer-service) então caso não tenha criado, crie uma rede para conectar os containers:
 ```
 docker network create local
 ```
