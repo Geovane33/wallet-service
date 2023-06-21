@@ -16,6 +16,12 @@ public class Exception extends RuntimeException {
         }
     }
 
+    public static class BadRequest extends Exception {
+        public BadRequest(String message) {
+            super(message, HttpStatus.BAD_REQUEST);
+        }
+    }
+
     public static class NullPointerException extends Exception {
         public NullPointerException(String message) {
             super(message);

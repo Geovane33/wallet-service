@@ -1,9 +1,9 @@
 package com.purebank.walletservice.wallet;
 
 import com.purebank.walletservice.wallet.api.WalletApi;
+import com.purebank.walletservice.wallet.exceptions.Exception;
 import com.purebank.walletservice.wallet.resource.WalletActivityResource;
 import com.purebank.walletservice.wallet.resource.WalletResource;
-import com.purebank.walletservice.wallet.exceptions.Exception;
 import com.purebank.walletservice.wallet.service.WalletActivityService;
 import com.purebank.walletservice.wallet.service.WalletService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -13,7 +13,8 @@ import org.springframework.web.bind.annotation.RestController;
 import java.math.BigDecimal;
 import java.util.List;
 
-import static com.purebank.walletservice.wallet.utils.constants.Constants.*;
+import static com.purebank.walletservice.wallet.utils.constants.Constants.DEPOSIT_AMOUNT_MUST_BE_GREATER_THAN_XXXX_AND_LESS_THAN_XXXX;
+import static com.purebank.walletservice.wallet.utils.constants.Constants.WITHDRAWAL_AMOUNT_MUST_BE_GREATER_THAN_XXXX_AND_LESS_THAN_XXXX;
 
 
 @RestController
@@ -45,6 +46,9 @@ public class WalletController implements WalletApi {
 
     @Override
     public ResponseEntity<WalletResource> updateWallet(WalletResource walletResource) {
+        if (walletResource.getId() == null) {
+            throw new Exception.BadRequest("Informe o id da carteira que deseja atualizar");
+        }
         walletResource = walletService.updateWallet(walletResource);
         return ResponseEntity.ok(walletResource);
     }
