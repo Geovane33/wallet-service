@@ -124,7 +124,7 @@ public class WalletServiceTest {
         walletEntity.setBalance(BigDecimal.valueOf(10));
         walletEntity.setName("Test");
         walletEntity.setId(1L);
-        Mockito.doReturn(walletEntity).when(walletRepository).save(walletEntity);
+        Mockito.doReturn(Optional.of(walletEntity)).when(walletRepository).findWalletById(walletEntity.getId());
 
         WalletResource walletResource = new WalletResource();
         walletResource.setBalance(BigDecimal.valueOf(10));
