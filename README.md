@@ -77,10 +77,10 @@ Após executar esses passos, a aplicação estará disponível em http://localho
 - O projeto está utilizando FlywayDB e nesse caso, para facilitar os testes locais, o banco de dados já terá 4 Wallets.
 - Acesse a documentação da API em http://localhost:8080/swagger-ui/index.html para obter mais detalhes sobre os endpoints disponíveis.
 
-## Setup da aplicação usando Docker
+# Setup da aplicação usando Docker
 
 ## Pré-requisitos
-Antes de executar a aplicação, considerando que o projeto ja vem com H2 e RabbitMQ configurados no projeto, certifique-se de ter as seguintes dependências instaladas corretamente em seu ambiente de desenvolvimento:
+Antes de executar a aplicação, considerando que o projeto ja vem com H2 e RabbitMQ configurados, certifique-se de ter as seguintes dependências instaladas corretamente em seu ambiente de desenvolvimento:
 ```
 - Java 17
 - Docker 24.0.2
@@ -120,8 +120,6 @@ Após executar esses passos, a aplicação estará disponível em http://localho
 Swagger: http://localhost:8080/swagger-ui/index.html
 
 Observações:
-- Certifique-se de ter o Docker instalado em sua máquina.
-- Certifique-se de ter as dependências corretamente instaladas e o projeto compilado antes de construir a imagem Docker.
-- A opção `-p 8080:8080` mapeia a porta 8081 do contêiner para a porta 8081 do host. Você pode alterar a porta do host, se desejar.
+- A opção `-p 8080:8080` mapeia a porta 8080 do contêiner para a porta 8080 do host. Você pode alterar a porta do host, se desejar.
 - O parâmetro `--network local` conecta o contêiner à rede local que foi criada.
 - O parâmetro `--name wallet-service` define o nome do contêiner como "payment-transfer-service". Você pode escolher um nome diferente, se desejar.
