@@ -70,10 +70,7 @@ mvn clean package
 mvn spring-boot:run
 ```
 
-Após executar esses passos, a aplicação estará disponível em http://localhost:8080.
-
-
-## Observações
+- Após executar esses passos, a aplicação estará disponível em http://localhost:8080.
 - O projeto está utilizando FlywayDB e nesse caso, para facilitar os testes locais, o banco de dados já terá 4 Wallets.
 - Acesse a documentação da API em http://localhost:8080/swagger-ui/index.html para obter mais detalhes sobre os endpoints disponíveis.
 
@@ -116,8 +113,8 @@ docker network create local
 docker run -d -p 8080:8080 --network local --name wallet-service wallet-service
 ```
 
-Após executar esses passos, a aplicação estará disponível em http://localhost:8080.
-Swagger: http://localhost:8080/swagger-ui/index.html
+- Após executar esses passos, a aplicação estará disponível em http://localhost:8080.
+- Acesse a documentação da API em http://localhost:8080/swagger-ui/index.html para obter mais detalhes sobre os endpoints disponíveis.
 
 Observações:
 - A opção `-p 8080:8080` mapeia a porta 8080 do contêiner para a porta 8080 do host. Você pode alterar a porta do host, se desejar.
