@@ -139,6 +139,27 @@ public class WalletControllerTest {
     }
 
     @Test
+    @DisplayName("Atualizar Carteira sem ID")
+    void updateWalletWithoutIdTest() throws Exception {
+        WalletResource walletResource = new WalletResource();
+        walletResource.setBalance(BigDecimal.valueOf(10));
+        walletResource.setName("Test");
+        walletResource.setId(1L);
+
+        String requestBody = "{\"name\": \"Test\", \"balance\": 10 }";
+        WalletResource walletResourceUpdate = objectMapper.readValue(requestBody, WalletResource.class);
+        walletResourceUpdate.setName("Test update");
+
+        Mockito.doReturn(walletResourceUpdate).when(walletService).updateWallet(walletResource);
+        Assertions.assertThrows(ServletException.class, () ->
+        mvc.perform(MockMvcRequestBuilders.put(API_WALLET)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content(requestBody))
+                .andExpect(status().isBadRequest()));
+    }
+
+
+    @Test
     @DisplayName("Depositar na Carteira")
     void depositTest() throws Exception {
         Long walletId = 1L;
