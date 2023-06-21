@@ -128,9 +128,13 @@ public interface WalletApi {
             @Parameter(description = "Valor do saque", required = true)
             @RequestParam @Positive BigDecimal amount);
 
+
+    @ApiResponse(responseCode = "200", description = "Listar todas as atividades de uma carteira",
+            content = @Content(mediaType = MediaType.APPLICATION_JSON_VALUE,
+                    schema = @Schema(implementation = WalletActivityResource.class)))
     @Operation(summary = "Listar todas as atividades de uma carteira",
             description = "Lista todas as atividades de uma carteira com base no ID fornecido.")
-    @GetMapping("/{walletId}/activities")
+    @GetMapping(value = "/{walletId}/activities", produces = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<List<WalletActivityResource>> activities(
             @Parameter(description = "ID da carteira", required = true)
             @PathVariable Long walletId);
