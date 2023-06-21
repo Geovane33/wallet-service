@@ -121,3 +121,5 @@ Observações:
 - A opção `-p 8080:8080` mapeia a porta 8080 do contêiner para a porta 8080 do host. Você pode alterar a porta do host, se desejar.
 - O parâmetro `--network local` conecta o contêiner à rede local que foi criada.
 - O parâmetro `--name wallet-service` define o nome do contêiner como "payment-transfer-service". Você pode escolher um nome diferente, se desejar.
+
+#![wallet comunicações](wallet.png)
