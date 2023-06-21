@@ -69,6 +69,7 @@ mvn clean package
 ```
 mvn spring-boot:run
 ```
+5. O serviço [payment-transfer-service](https://github.com/Geovane33/payment-transfer-service) fornece endpoints relacionados a transferencia e pagamentos, siga o passo a passo cliquando [aqui](https://github.com/Geovane33/payment-transfer-service) caso deseja utilizar os endpoints.
 
 - Após executar esses passos, a aplicação estará disponível em http://localhost:8080.
 - O projeto está utilizando FlywayDB e nesse caso, para facilitar os testes locais, o banco de dados já terá 4 Wallets.
