@@ -1,5 +1,5 @@
 CREATE TABLE IF NOT EXISTS wallet_activity (
-  id BIGINT AUTO_INCREMENT PRIMARY KEY,
+  id BIGINT AUTO_INCREMENT,
   wallet_id BIGINT NOT NULL,
   uuid_activity VARCHAR(255),
   activity_type VARCHAR(255) NOT NULL,

@@ -34,7 +34,7 @@ public class WalletActivityServiceImpl implements WalletActivityService {
             walletActivity.setWalletId(walletActivityResource.getWalletId());
             walletActivity.setStatus(walletActivityResource.getStatus());
             walletActivity.setUuidActivity(walletActivityResource.getUuidActivity());
-            if (ProcessStatus.COMPLETED.equals(walletActivityResource.getStatus())) {
+            if (!ProcessStatus.PENDING.equals(walletActivityResource.getStatus())) {
                 walletActivity.setUuidActivity(StringUtils.EMPTY);
             }
             walletActivity.setAmount(walletActivityResource.getAmount());
