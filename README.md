@@ -123,3 +123,8 @@ Observações:
 - O parâmetro `--name wallet-service` define o nome do contêiner como "payment-transfer-service". Você pode escolher um nome diferente, se desejar.
 
 ![wallet comunicações](wallet.png)
+
+```
+ Este repositório não armezena somente códigos desse projeto, ele armazena determinação, noites em claro, muito aprendizado e expetativas que, por vezes, foram frustadas!! Mas eu sei que cada linha representa uma jornada repleta de desafios e superações.
+ Este repositório é mais do que uma simples coleção de arquivos, é uma história de crescimento, evolução e o reflexo do poder de nunca desistir diante das adversidades.
+```
